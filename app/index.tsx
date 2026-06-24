@@ -26,6 +26,7 @@ export default function App() {
       >
         Go to Sign Up
       </Link>
+      <Link href='/subscriptions/claude'>Claude Max Subscription</Link>
     </View>
   );
 }
