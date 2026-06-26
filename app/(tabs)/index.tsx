@@ -1,6 +1,7 @@
 import "@/global.css";
-import { Text } from "react-native";
+import { Text, View, Image, FlatList } from "react-native";
 import { Link } from "expo-router";
+import {HOME_BALANCE, HOME_SUBSCRIPTIONS, HOME_USER, UPCOMING_SUBSCRIPTIONS} from "@/constants/data";
 
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { styled } from "nativewind";
@@ -10,6 +11,8 @@ import { formatCurrency } from "../libs/utils";
 import UpcomingSubscriptionCard from "@/app/components/UpcomingSubscriptionCard";
 import dayjs from "dayjs";
 import SubscriptionCard from "@/app/components/SubscriptionCard";
+import ListHeading from "@/app/components/ListHeading";
+
 import React from "react";
 const SafeAreaView = styled(RNSafeAreaView);
 
