@@ -70,7 +70,6 @@ export default function App() {
       <FlatList
         data={HOME_SUBSCRIPTIONS}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 20 }}
         ListHeaderComponent={renderHeader}
         extraData={expandedSubscriptionId}
         showsVerticalScrollIndicator={false}
