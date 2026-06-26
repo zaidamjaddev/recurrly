@@ -15,7 +15,7 @@ export const HOME_USER = {
 
 export const HOME_BALANCE = {
     amount: 2489.48,
-    nextRenewalDate: "2026-03-18T09:00:00.000Z",
+    nextRenewalDate: "2026-07-18T09:00:00.000Z",
 };
 
 export const UPCOMING_SUBSCRIPTIONS: UpcomingSubscription[] = [
@@ -25,7 +25,7 @@ export const UPCOMING_SUBSCRIPTIONS: UpcomingSubscription[] = [
         name: "Spotify",
         price: 5.99,
         currency: "USD",
-        daysLeft: 2,
+        renewalDate: "2026-06-28T09:00:00.000Z",
     },
     {
         id: "notion",
@@ -33,7 +33,7 @@ export const UPCOMING_SUBSCRIPTIONS: UpcomingSubscription[] = [
         name: "Notion",
         price: 12.0,
         currency: "USD",
-        daysLeft: 4,
+        renewalDate: "2026-06-30T09:00:00.000Z",
     },
     {
         id: "figma",
@@ -41,7 +41,7 @@ export const UPCOMING_SUBSCRIPTIONS: UpcomingSubscription[] = [
         name: "Figma",
         price: 15.0,
         currency: "USD",
-        daysLeft: 6,
+        renewalDate: "2026-07-02T09:00:00.000Z",
     },
 ];
 
@@ -58,7 +58,7 @@ export const HOME_SUBSCRIPTIONS: Subscription[] = [
         price: 77.49,
         currency: "USD",
         billing: "Monthly",
-        renewalDate: "2026-03-20T10:00:00.000Z",
+        renewalDate: "2026-07-20T10:00:00.000Z",
         color: "#f5c542",
     },
     {
@@ -73,7 +73,7 @@ export const HOME_SUBSCRIPTIONS: Subscription[] = [
         price: 9.99,
         currency: "USD",
         billing: "Monthly",
-        renewalDate: "2026-03-24T10:00:00.000Z",
+        renewalDate: "2026-07-24T10:00:00.000Z",
         color: "#e8def8",
     },
     {
@@ -88,7 +88,7 @@ export const HOME_SUBSCRIPTIONS: Subscription[] = [
         price: 20.0,
         currency: "USD",
         billing: "Monthly",
-        renewalDate: "2026-03-27T10:00:00.000Z",
+        renewalDate: "2026-07-27T10:00:00.000Z",
         color: "#b8d4e3",
     },
     {
@@ -103,7 +103,7 @@ export const HOME_SUBSCRIPTIONS: Subscription[] = [
         price: 119.99,
         currency: "USD",
         billing: "Yearly",
-        renewalDate: "2026-04-02T10:00:00.000Z",
+        renewalDate: "2026-08-02T10:00:00.000Z",
         color: "#b8e8d0",
     },
 ];
