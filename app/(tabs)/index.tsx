@@ -1,12 +1,7 @@
 import "@/global.css";
-import { View, Image, Text, FlatList } from "react-native";
-import {
-  HOME_BALANCE,
-  HOME_SUBSCRIPTIONS,
-  HOME_USER,
-  UPCOMING_SUBSCRIPTIONS,
-} from "@/constants/data";
-import ListHeading from "@/app/components/ListHeading";
+import { Text } from "react-native";
+import { Link } from "expo-router";
+
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { styled } from "nativewind";
 import images from "@/constants/images";
