@@ -1,9 +1,19 @@
-import { useAuth } from "@clerk/expo";
+import { useAuth, useUser } from "@clerk/expo";
 import { Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
+import { useEffect } from "react";
+import { usePostHog } from "posthog-react-native";
 
 export default function Index() {
   const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    if (isSignedIn && user?.id) {
+      posthog.identify(user.id);
+    }
+  }, [isSignedIn, user?.id, posthog]);
 
   if (!isLoaded) {
     return (

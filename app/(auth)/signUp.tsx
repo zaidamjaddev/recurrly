@@ -2,6 +2,7 @@ import "@/global.css";
 import { useSignUp, useAuth } from "@clerk/expo";
 import { type Href, Link, useRouter } from "expo-router";
 import React from "react";
+import { usePostHog } from "posthog-react-native";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -21,6 +22,7 @@ export default function SignUpPage() {
   const { signUp, errors, fetchStatus } = useSignUp();
   const { isSignedIn } = useAuth();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -54,9 +56,11 @@ export default function SignUpPage() {
 
   // Clerk v3: use signUp.verifications.verifyEmailCode() then signUp.finalize()
   const handleVerify = async () => {
+    posthog.capture('email_verification_submitted');
     await signUp.verifications.verifyEmailCode({ code });
 
     if (signUp.status === "complete") {
+      posthog.capture('user_signed_up');
       await signUp.finalize({
         navigate: ({ session, decorateUrl }) => {
           if (session?.currentTask) {
