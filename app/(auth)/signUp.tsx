@@ -28,21 +28,27 @@ export default function SignUpPage() {
   const [lastName, setLastName] = React.useState("");
   const [code, setCode] = React.useState("");
 
-  // Clerk v3: use signUp.password() then signUp.verifications.sendEmailCode()
+  // Clerk v3 / Core 3 standard custom email/password flow
   const handleSubmit = async () => {
-    const { error } = await signUp.password({
-      emailAddress,
-      password,
-    });
+    try {
+      // Pass email, password, and names directly into the unified password method
+      const { error } = await signUp.password({
+        emailAddress,
+        password,
+        firstName: firstName.trim() || undefined,
+        lastName: lastName.trim() || undefined,
+      });
 
-    if (error) {
-      console.error(JSON.stringify(error, null, 2));
-      return;
-    }
+      if (error) {
+        console.error("Sign-up Error details:", JSON.stringify(error, null, 2));
+        return;
+      }
 
-    // If no error, send verification email
-    if (!error) {
+      // Send the 6-digit verification email code
       await signUp.verifications.sendEmailCode();
+
+    } catch (error: any) {
+      console.error("Unexpected Error:", JSON.stringify(error, null, 2));
     }
   };
 

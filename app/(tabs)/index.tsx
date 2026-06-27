@@ -1,10 +1,10 @@
 import "@/global.css";
-import { Text, View, Image, FlatList, Pressable } from "react-native";
-import { Link } from "expo-router";
-import { Show, useUser, useClerk } from "@clerk/expo";
+import { Text, View, Image, FlatList } from "react-native";
+import { useUser } from "@clerk/expo";
 import {
   HOME_BALANCE,
   HOME_SUBSCRIPTIONS,
+  HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
 
@@ -23,7 +23,6 @@ const SafeAreaView = styled(RNSafeAreaView);
 
 export default function HomeScreen() {
   const { user } = useUser();
-  const { signOut } = useClerk();
 
   const [expandedSubscriptionId, setExpandedSubscriptionId] = React.useState<
     string | null
@@ -33,42 +32,23 @@ export default function HomeScreen() {
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
     : "User";
 
-  const avatarUri = user?.imageUrl;
+  const avatarSource = user?.hasImage 
+    ? { uri: user.imageUrl } 
+    : require("@/assets/images/user.jpeg");
 
   const renderHeader = () => (
     <>
       <View className="home-header">
-        <Show when="signed-in">
-          <View className="home-user">
-            {avatarUri ? (
-              <Image source={{ uri: avatarUri }} className="home-avatar" />
-            ) : (
-              <Image source={images.user} className="home-avatar" />
-            )}
-            <View style={{ marginLeft: 12 }}>
-              <Text className="home-user-name">{displayName}</Text>
-              <Pressable onPress={() => signOut()}>
-                <Text className="auth-link" style={{ marginLeft: 0 }}>
-                  Sign out
-                </Text>
-              </Pressable>
-            </View>
+        <View className="home-user">
+          {avatarSource ? (
+            <Image source={avatarSource} className="home-avatar" />
+          ) : (
+            <Image source={images.user} className="home-avatar" />
+          )}
+          <View style={{ marginLeft: 12 }}>
+            <Text className="home-user-name">{HOME_USER.name}</Text>
           </View>
-        </Show>
-        <Show when="signed-out">
-          <View className="home-user" style={{ gap: 12 }}>
-            <Link href="/(auth)/signIn" asChild>
-              <Pressable className="auth-secondary-button" style={{ paddingHorizontal: 16 }}>
-                <Text className="auth-secondary-button-text">Sign in</Text>
-              </Pressable>
-            </Link>
-            <Link href="/(auth)/signUp" asChild>
-              <Pressable className="auth-button" style={{ paddingHorizontal: 16, paddingVertical: 10, marginTop: 0 }}>
-                <Text className="auth-button-text">Sign up</Text>
-              </Pressable>
-            </Link>
-          </View>
-        </Show>
+        </View>
         <Image source={icons.add} className="home-add-icon" />
       </View>
 
