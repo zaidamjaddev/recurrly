@@ -1,24 +1,45 @@
 import PostHog from "posthog-react-native";
+import Constants from "expo-constants";
 
-// Reads directly from process.env with the EXPO_PUBLIC_ prefix
-const apiKey = process.env.EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN;
-const host = process.env.EXPO_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+type PostHogExtra = {
+  posthogProjectToken?: string;
+  posthogHost?: string;
+};
 
-const isPostHogConfigured = apiKey && apiKey.startsWith("phc_");
+const extra = Constants.expoConfig?.extra as PostHogExtra | undefined;
 
-// if (!isPostHogConfigured) {
-//   console.warn(
-//     'PostHog project token not found or misconfigured. Analytics are disabled. ' +
-//     'Make sure EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN is set in your .env file.'
-//   );
-// }
-if (isPostHogConfigured) {
-  console.log("posthog integrated successfully");
+const apiKey =
+  extra?.posthogProjectToken ??
+  process.env.EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN ??
+  "";
+const host =
+  extra?.posthogHost ??
+  process.env.EXPO_PUBLIC_POSTHOG_HOST ??
+  "https://us.i.posthog.com";
+
+const isPostHogConfigured = Boolean(apiKey && apiKey.startsWith("phc_"));
+
+if (__DEV__) {
+  console.log("[PostHog] status:", {
+    configured: isPostHogConfigured,
+    host,
+    tokenPresent: Boolean(apiKey),
+  });
+
+  if (!isPostHogConfigured) {
+    console.warn(
+      "[PostHog] Analytics disabled. Set EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN in .env.local and restart Expo.",
+    );
+  }
 }
+
 export const posthog = new PostHog(apiKey || "placeholder_key", {
   host,
   disabled: !isPostHogConfigured,
   captureAppLifecycleEvents: true,
+  debug: __DEV__,
   flushAt: 1,
-  flushInterval: 0,
+  flushInterval: 10000,
 });
+
+export const isPostHogEnabled = isPostHogConfigured;

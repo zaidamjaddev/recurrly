@@ -33,9 +33,12 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (previousPathname.current !== pathname) {
-      posthog.screen(pathname, {
-        previous_screen: previousPathname.current ?? null,
-        ...params,
+      void posthog.ready().then(() => {
+        posthog.screen(pathname, {
+          previous_screen: previousPathname.current ?? null,
+          ...params,
+        });
+        void posthog.flush();
       });
       previousPathname.current = pathname;
     }
