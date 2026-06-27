@@ -13,6 +13,7 @@ import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { styled } from "nativewind";
 import { useUser, useClerk, useAuth } from "@clerk/expo";
 import { HOME_USER } from "@/constants/data";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -20,6 +21,7 @@ export default function SettingsScreen() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const { isSignedIn } = useAuth();
+  const posthog = usePostHog();
 
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
@@ -32,6 +34,8 @@ export default function SettingsScreen() {
         onPress: async () => {
           setIsLoggingOut(true);
           try {
+            posthog.capture('user_signed_out');
+            posthog.reset();
             await signOut();
           } catch (err) {
             console.error("Sign out error:", err);

@@ -1,6 +1,7 @@
 import "@/global.css";
-import { Text, View, Image, FlatList } from "react-native";
+import { Text, View, Image, FlatList, Pressable } from "react-native";
 import { useUser } from "@clerk/expo";
+import { usePostHog } from "posthog-react-native";
 import {
   HOME_BALANCE,
   HOME_SUBSCRIPTIONS,
@@ -17,13 +18,18 @@ import UpcomingSubscriptionCard from "@/app/components/UpcomingSubscriptionCard"
 import dayjs from "dayjs";
 import SubscriptionCard from "@/app/components/SubscriptionCard";
 import ListHeading from "@/app/components/ListHeading";
+import CreateSubscriptionModal from "@/app/components/CreateSubscriptionModal";
 
 import React from "react";
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function HomeScreen() {
   const { user } = useUser();
+  const posthog = usePostHog();
 
+  const [subscriptions, setSubscriptions] =
+    React.useState<Subscription[]>(HOME_SUBSCRIPTIONS);
+  const [isCreateModalVisible, setIsCreateModalVisible] = React.useState(false);
   const [expandedSubscriptionId, setExpandedSubscriptionId] = React.useState<
     string | null
   >(null);
@@ -32,8 +38,8 @@ export default function HomeScreen() {
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
     : "User";
 
-  const avatarSource = user?.hasImage 
-    ? { uri: user.imageUrl } 
+  const avatarSource = user?.hasImage
+    ? { uri: user.imageUrl }
     : require("@/assets/images/user.jpeg");
 
   const renderHeader = () => (
@@ -49,7 +55,13 @@ export default function HomeScreen() {
             <Text className="home-user-name">{HOME_USER.name}</Text>
           </View>
         </View>
-        <Image source={icons.add} className="home-add-icon" />
+        <Pressable
+          onPress={() => setIsCreateModalVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel="Add subscription"
+        >
+          <Image source={icons.add} className="home-add-icon" />
+        </Pressable>
       </View>
 
       <View className="home-balance-card">
@@ -65,7 +77,10 @@ export default function HomeScreen() {
       </View>
 
       <View>
-        <ListHeading title="Upcoming" />
+        <ListHeading
+          title="Upcoming"
+          onViewPress={() => console.log("View All Pressed")}
+        />
         <FlatList
           data={UPCOMING_SUBSCRIPTIONS}
           keyExtractor={(item) => item.id.toString()}
@@ -80,17 +95,32 @@ export default function HomeScreen() {
         />
       </View>
 
-      <ListHeading title="All Subscriptions" />
+      <ListHeading
+        title="All Subscriptions"
+        onViewPress={() => console.log("View All Pressed")}
+      />
     </>
   );
 
   return (
     <SafeAreaView className="flex-1 bg-background">
+      <CreateSubscriptionModal
+        visible={isCreateModalVisible}
+        onClose={() => setIsCreateModalVisible(false)}
+        onCreate={(subscription) => {
+          setSubscriptions((current) => [subscription, ...current]);
+          posthog.capture("subscription_created", {
+            subscription_name: subscription.name,
+            billing: subscription.billing,
+            category: subscription.category ?? null,
+          });
+        }}
+      />
       <FlatList
-        data={HOME_SUBSCRIPTIONS}
+        data={subscriptions}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={renderHeader}
-        extraData={expandedSubscriptionId}
+        extraData={[expandedSubscriptionId, subscriptions]}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View className="h-4" />}
         ListEmptyComponent={
@@ -100,11 +130,19 @@ export default function HomeScreen() {
           <SubscriptionCard
             {...item}
             expanded={expandedSubscriptionId === item.id}
-            onPress={() =>
+            onPress={() => {
+              const isExpanding = expandedSubscriptionId !== item.id;
+              if (isExpanding) {
+                posthog.capture('subscription_card_expanded', {
+                  subscription_name: item.name,
+                  billing: item.billing,
+                  category: item.category ?? null,
+                });
+              }
               setExpandedSubscriptionId((currentId) =>
                 currentId === item.id ? null : item.id,
-              )
-            }
+              );
+            }}
           />
         )}
         contentContainerStyle={{
