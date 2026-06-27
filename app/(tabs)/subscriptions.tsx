@@ -78,6 +78,7 @@ export default function SubscriptionsScreen() {
             onPress={() => {
               const isExpanding = expandedSubscriptionId !== item.id;
               if (isExpanding) {
+                alert("Triggered!");
                 posthog.capture("subscription_card_expanded", {
                   subscription_name: item.name,
                   billing: item.billing,
