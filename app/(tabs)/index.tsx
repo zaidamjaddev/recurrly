@@ -1,6 +1,12 @@
 import "@/global.css";
-import { Text } from "react-native";
-import { Link } from "expo-router";
+import { Text, View, Image, FlatList } from "react-native";
+import { useUser } from "@clerk/expo";
+import {
+  HOME_BALANCE,
+  HOME_SUBSCRIPTIONS,
+  HOME_USER,
+  UPCOMING_SUBSCRIPTIONS,
+} from "@/constants/data";
 
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { styled } from "nativewind";
@@ -10,20 +16,38 @@ import { formatCurrency } from "../libs/utils";
 import UpcomingSubscriptionCard from "@/app/components/UpcomingSubscriptionCard";
 import dayjs from "dayjs";
 import SubscriptionCard from "@/app/components/SubscriptionCard";
+import ListHeading from "@/app/components/ListHeading";
+
 import React from "react";
 const SafeAreaView = styled(RNSafeAreaView);
 
-export default function App() {
+export default function HomeScreen() {
+  const { user } = useUser();
+
   const [expandedSubscriptionId, setExpandedSubscriptionId] = React.useState<
     string | null
   >(null);
+
+  const displayName = user?.firstName
+    ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
+    : "User";
+
+  const avatarSource = user?.hasImage 
+    ? { uri: user.imageUrl } 
+    : require("@/assets/images/user.jpeg");
 
   const renderHeader = () => (
     <>
       <View className="home-header">
         <View className="home-user">
-          <Image source={images.user} className="home-avatar" />
-          <Text className="home-user-name">{HOME_USER.name}</Text>
+          {avatarSource ? (
+            <Image source={avatarSource} className="home-avatar" />
+          ) : (
+            <Image source={images.user} className="home-avatar" />
+          )}
+          <View style={{ marginLeft: 12 }}>
+            <Text className="home-user-name">{HOME_USER.name}</Text>
+          </View>
         </View>
         <Image source={icons.add} className="home-add-icon" />
       </View>
