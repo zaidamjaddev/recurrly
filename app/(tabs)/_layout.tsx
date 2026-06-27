@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
 import clsx from "clsx";
 import { useAuth } from "@clerk/expo";
+import { SubscriptionsProvider } from "@/app/context/SubscriptionsContext";
 
 const tabBar = components.tabBar;
 
@@ -37,6 +38,7 @@ const TabLayout = () => {
     );
   };
   return (
+    <SubscriptionsProvider>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -74,6 +76,7 @@ const TabLayout = () => {
         />
       ))}
     </Tabs>
+    </SubscriptionsProvider>
   );
 };
 

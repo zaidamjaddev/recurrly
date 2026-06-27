@@ -3,9 +3,9 @@ import { Text, View, FlatList, TextInput } from "react-native";
 import React from "react";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import { styled } from "nativewind";
-import { HOME_SUBSCRIPTIONS } from "@/constants/data";
 import SubscriptionCard from "@/app/components/SubscriptionCard";
 import { usePostHog } from "posthog-react-native";
+import { useSubscriptions } from "@/app/context/SubscriptionsContext";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -30,14 +30,15 @@ function matchesSearch(subscription: Subscription, query: string): boolean {
 
 export default function SubscriptionsScreen() {
   const posthog = usePostHog();
+  const { subscriptions } = useSubscriptions();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [expandedSubscriptionId, setExpandedSubscriptionId] = React.useState<
     string | null
   >(null);
 
   const filteredSubscriptions = React.useMemo(
-    () => HOME_SUBSCRIPTIONS.filter((sub) => matchesSearch(sub, searchQuery)),
-    [searchQuery],
+    () => subscriptions.filter((sub) => matchesSearch(sub, searchQuery)),
+    [subscriptions, searchQuery],
   );
 
   return (
@@ -45,7 +46,7 @@ export default function SubscriptionsScreen() {
       <FlatList
         data={filteredSubscriptions}
         keyExtractor={(item) => item.id}
-        extraData={[expandedSubscriptionId, searchQuery]}
+        extraData={[expandedSubscriptionId, searchQuery, subscriptions]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         ItemSeparatorComponent={() => <View className="h-4" />}
@@ -78,7 +79,6 @@ export default function SubscriptionsScreen() {
             onPress={() => {
               const isExpanding = expandedSubscriptionId !== item.id;
               if (isExpanding) {
-                alert("Triggered!");
                 posthog.capture("subscription_card_expanded", {
                   subscription_name: item.name,
                   billing: item.billing,

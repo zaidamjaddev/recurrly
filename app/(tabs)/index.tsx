@@ -4,7 +4,6 @@ import { useUser } from "@clerk/expo";
 import { usePostHog } from "posthog-react-native";
 import {
   HOME_BALANCE,
-  HOME_SUBSCRIPTIONS,
   HOME_USER,
   UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
@@ -19,6 +18,7 @@ import dayjs from "dayjs";
 import SubscriptionCard from "@/app/components/SubscriptionCard";
 import ListHeading from "@/app/components/ListHeading";
 import CreateSubscriptionModal from "@/app/components/CreateSubscriptionModal";
+import { useSubscriptions } from "@/app/context/SubscriptionsContext";
 
 import React from "react";
 const SafeAreaView = styled(RNSafeAreaView);
@@ -27,8 +27,7 @@ export default function HomeScreen() {
   const { user } = useUser();
   const posthog = usePostHog();
 
-  const [subscriptions, setSubscriptions] =
-    React.useState<Subscription[]>(HOME_SUBSCRIPTIONS);
+  const { subscriptions, addSubscription } = useSubscriptions();
   const [isCreateModalVisible, setIsCreateModalVisible] = React.useState(false);
   const [expandedSubscriptionId, setExpandedSubscriptionId] = React.useState<
     string | null
@@ -108,7 +107,7 @@ export default function HomeScreen() {
         visible={isCreateModalVisible}
         onClose={() => setIsCreateModalVisible(false)}
         onCreate={(subscription) => {
-          setSubscriptions((current) => [subscription, ...current]);
+          addSubscription(subscription);
           posthog.capture("subscription_created", {
             subscription_name: subscription.name,
             billing: subscription.billing,

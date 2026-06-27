@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { icons } from "@/constants/icons";
+import { getSubscriptionIcon } from "@/app/libs/subscriptionIcons";
 
 const CATEGORIES = [
   "Entertainment",
@@ -110,7 +110,7 @@ const CreateSubscriptionModal = ({
       status: "active",
       startDate,
       renewalDate,
-      icon: icons.wallet,
+      icon: getSubscriptionIcon(name.trim(), category),
       billing: frequency,
       color: CATEGORY_COLORS[category],
       currency: "USD",
